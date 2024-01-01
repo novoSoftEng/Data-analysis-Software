@@ -1,79 +1,121 @@
 import tkinter as tk
-from tkinter import ttk, simpledialog
-import pandas as pd
-from openpyxl import Workbook
+from tkinter import simpledialog, messagebox
+from tksheet import Sheet
 
-# Function to create a CSV file
-def create_csv(data, columns, file_name):
-    df = pd.DataFrame(data, columns=columns)
+# Fonction pour créer un fichier CSV
+def create_csv():
+    file_name = file_name_var.get()
+    if not file_name:
+        messagebox.showerror("Erreur", "Veuillez entrer un nom de fichier.")
+        return
+
+    data = sheet.get_sheet_data()
+    if not columns:
+        messagebox.showerror("Erreur", "Veuillez définir au moins une colonne.")
+        return
+
+    df = pd.DataFrame(data[1:], columns=columns)  # Skip the first row which contains column names
     df.to_csv(f'{file_name}.csv', index=False)
-    tk.messagebox.showinfo("Succès", f"Le fichier {file_name}.csv a été créé avec succès!")
-# Function to open a form for data input
-def open_data_form():
-    form = tk.Toplevel(window)
+    # Afficher un message de succès
+    messagebox.showinfo("Succès", f"Le fichier {file_name}.csv a été créé avec succès!")
 
-    # Create an entry for each column
-    entries = {}
-    for col in columns:
-        tk.Label(form, text=f"{col}:").pack()
-        entries[col] = tk.Entry(form)
-        entries[col].pack()
 
-    # Function to handle form submission
-    def submit_form():
-        values = [entries[col].get() for col in columns]
-        table.insert(parent='', index=0, values=values)
-        form.destroy()
+# Fonction pour ajouter une ligne à la table
+def add_row():
+    values = sheet.get_sheet_data()[0]
+    sheet.insert_row(values)
 
-    # Submit button
-    tk.Button(form, text="Submit", command=submit_form).pack()
 
-# window
+# Fonction pour éditer le nom de colonne
+def edit_column(col):
+    new_name = simpledialog.askstring("Modifier le nom de colonne", f"Entrez le nouveau nom pour la colonne {col}:")
+    if new_name:
+        columns[columns.index(col)] = new_name
+        refresh_table()
+
+
+# Fonction pour rafraîchir la table avec les nouvelles colonnes
+def refresh_table():
+    sheet.headers(columns)
+    data = sheet.get_sheet_data()
+    sheet.set_sheet_data([[None] * len(columns)] + data[1:])
+
+
+# Fenêtre principale
 window = tk.Tk()
-window.geometry('600x400')
-window.title('Treeview')
+window.geometry('800x600')
+window.title('Modification de Table')
 
-# Get the CSV file name from the user
-file_name = simpledialog.askstring("Input", "Enter the CSV file name (without extension):")
-
-# Get the number of columns from the user
-num_columns = simpledialog.askinteger("Input", "Enter the number of columns:", initialvalue=3)
-
-# Get column names from the user
+# Variables pour stocker le nom du fichier et les colonnes
+file_name_var = tk.StringVar()
 columns = []
-for i in range(num_columns):
-    column_name = simpledialog.askstring("Input", f"Enter name for column {i + 1}:")
-    columns.append(column_name)
 
-# treeview
-table = ttk.Treeview(window, columns=columns, show='headings')
+# Entrée pour le nom du fichier
+tk.Label(window, text="Nom du fichier CSV (sans extension):").pack()
+tk.Entry(window, textvariable=file_name_var).pack()
 
-for name in columns:
-    table.heading(name, text=name)
+# Entrée pour le nombre de colonnes
+tk.Label(window, text="Nombre de colonnes:").pack()
+num_columns_var = tk.StringVar()
+num_columns_entry = tk.Entry(window, textvariable=num_columns_var)
+num_columns_entry.pack()
 
-table.pack(fill='both', expand=True)
 
-# Create CSV file button
-csv_button = tk.Button(window, text="Create CSV File", command=lambda: create_csv([table.item(item)['values'] for item in table.get_children()], columns, file_name))
+# Bouton pour définir le nombre de colonnes et créer la table
+def define_columns():
+    num_columns = num_columns_var.get()
+    try:
+        num_columns = int(num_columns)
+        if num_columns <= 0:
+            raise ValueError("Le nombre de colonnes doit être un entier positif.")
+    except ValueError as e:
+        messagebox.showerror("Erreur", str(e))
+        return
+
+    for i in range(num_columns):
+        column_name = simpledialog.askstring("Nom de la colonne", f"Entrez le nom de la colonne {i + 1}:")
+        if not column_name:
+            messagebox.showerror("Erreur", "Le nom de la colonne ne peut pas être vide.")
+            return
+        columns.append(column_name)
+
+    sheet.headers(columns)
+    num_columns_entry.config(state='disabled')
+    define_columns_button.config(state='disabled')
+    refresh_table()
+
+
+define_columns_button = tk.Button(window, text="Définir les colonnes", command=define_columns)
+define_columns_button.pack()
+
+# tksheet
+sheet = Sheet(window, page_up_down_select_row=True)
+sheet.enable_bindings(("single_select", "row_select", "column_width_resize", "arrowkeys", "right_click_popup_menu", "rc_select",
+                       "rc_insert_column", "rc_delete_column", "rc_delete_row"))
+sheet.pack(fill="both", expand=True)
+
+# Bouton pour ajouter une ligne
+add_row_button = tk.Button(window, text="Ajouter une ligne", command=add_row)
+add_row_button.pack()
+
+# Boutons pour éditer le nom de colonnes
+for col in columns:
+    edit_col_button = tk.Button(window, text=f"Modifier {col}", command=lambda c=col: edit_column(c))
+    edit_col_button.pack()
+
+# Bouton pour créer le fichier CSV
+csv_button = tk.Button(window, text="Créer le fichier CSV", command=create_csv)
 csv_button.pack()
 
-# Open data input form button
-form_button = tk.Button(window, text="Open Data Input Form", command=open_data_form)
-form_button.pack()
-
-# events
+# Événements
 def item_select(_):
-    print(table.selection())
-    for i in table.selection():
-        print(table.item(i)['values'])
+    print(sheet.get_selected_cells())
 
 def delete_items(_):
-    print('delete')
-    for i in table.selection():
-        table.delete(i)
+    selected_rows = sheet.get_selected_rows()
+    sheet.delete_row(selected_rows)
 
-table.bind('<<TreeviewSelect>>', item_select)
-table.bind('<Delete>', delete_items)
+sheet.extra_bindings([("cell_select", item_select), ("<Delete>", delete_items)])
 
-# run
+# Exécuter l'application
 window.mainloop()
