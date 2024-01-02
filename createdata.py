@@ -10,6 +10,11 @@ def create_csv():
         return
 
     data = sheet.get_sheet_data()
+    if not data:
+        messagebox.showerror("Erreur", "Aucune donnée à enregistrer.")
+        return
+
+    columns = data[0]  # La première ligne contient les noms de colonnes
     if not columns:
         messagebox.showerror("Erreur", "Veuillez définir au moins une colonne.")
         return
@@ -44,11 +49,6 @@ def add_row():
     values = sheet.get_sheet_data()[0]
     sheet.insert_row(values)
 
-def edit_column(col):
-    new_name = simpledialog.askstring("Modifier le nom de colonne", f"Entrez le nouveau nom pour la colonne {col}:")
-    if new_name:
-        columns[columns.index(col)] = new_name
-        refresh_table()
 
 def refresh_table():
     sheet.headers(columns)
@@ -113,9 +113,6 @@ sheet.set_options(edit_cell_validation=True)
 add_row_button = tk.Button(window, text="Ajouter une ligne", command=add_row)
 add_row_button.pack()
 
-for col in columns:
-    edit_col_button = tk.Button(window, text=f"Modifier {col}", command=lambda c=col: edit_column(c))
-    edit_col_button.pack()
 
 csv_button = tk.Button(window, text="Créer le fichier CSV", command=create_csv)
 csv_button.pack()
