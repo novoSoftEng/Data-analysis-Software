@@ -1,13 +1,22 @@
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import train_test_split
-import numpy as np
+
+from Preprocessing import Preprocessing
+
+
 class ML:
-    def __init__(self,model,X,y):
+    def __init__(self,model,X,y,stand=False,norm=False):
         self.model=model
         # Split the data into training and testing sets
         X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2)
         self.model=self.model.fit(X_train,y_train)
-        self.X_train=X_train
+        if stand:
+            self.X_train = Preprocessing(X_train).standardization()
+        elif norm:
+            self.X_train = Preprocessing(X_train).normalization()
+        else:
+            self.X_train=X_train
+
         self.y_train=y_train
         self.X_test = X_test
         self.y_test = y_test
