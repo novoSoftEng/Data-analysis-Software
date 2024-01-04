@@ -102,7 +102,7 @@ class MLGUI:
 
 root = tk.Tk()
 
-# Create an instance of the MLGUI class
+
 app = MLGUI(root)
 
     # Start the Tkinter event loop
