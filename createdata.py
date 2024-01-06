@@ -45,9 +45,16 @@ def define_columns():
     define_columns_button.config(state='normal')
     refresh_table()
 
+
 def add_row():
-    values = sheet.get_sheet_data()[0]
-    sheet.insert_row(values)
+    # Get the number of columns in the sheet (assuming sheet.get_column_count() is a method)
+    num_columns = int(num_columns_var.get())
+    print(num_columns)
+    # Create a new row with empty values
+    empty_values = [""] * num_columns
+
+    # Insert the new empty row into the sheet
+    sheet.insert_row(empty_values)
 
 
 def refresh_table():
