@@ -13,7 +13,7 @@ class First_Page(tk.Frame):
 
         # Create buttons using pack layout
         button1 = Button(self, text="Créer les données", fg='#24baa3', bg='#197069',
-                         command=lambda: subprocess.run(["python", 'createdata.py']))
+                         command=lambda: self.controller.show_create_data())
         button1.bind('<Enter>', lambda e: button1.config(background='#24baa3', foreground='#197069'))
         button1.bind('<Leave>', lambda e: button1.config(background='#197069', foreground='#24baa3'))
         button1.pack(fill="x")
