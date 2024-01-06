@@ -6,37 +6,38 @@ from MLGUI import MLGUI
 
 
 class First_Page(tk.Frame):
-    def __init__(self, root,controller):
+    def __init__(self, root, controller):
         super().__init__(root, bg="lightblue")
         self.root = root
         self.controller = controller
-        # Create buttons directly in __init__
-        button1 = Button(self, width=43, height=2, text="Créer les données", fg='#24baa3', bg='#197069',
-                         border=0, command=lambda: subprocess.run(["python", 'createdata.py']))
+
+        # Create buttons using pack layout
+        button1 = Button(self, text="Créer les données", fg='#24baa3', bg='#197069',
+                         command=lambda: subprocess.run(["python", 'createdata.py']))
         button1.bind('<Enter>', lambda e: button1.config(background='#24baa3', foreground='#197069'))
         button1.bind('<Leave>', lambda e: button1.config(background='#197069', foreground='#24baa3'))
-        button1.place(x=0, y=0)
+        button1.pack(fill="x")
 
-        button2 = Button(self, width=43, height=2, text="Importer un fichier des données", fg='#24baa3', bg='#197069',
-                         border=0, command=lambda: subprocess.run(["python", 'ImporterData.py']))
+        button2 = Button(self, text="Importer un fichier des données", fg='#24baa3', bg='#197069',
+                         command=lambda: subprocess.run(["python", 'ImporterData.py']))
         button2.bind('<Enter>', lambda e: button2.config(background='#24baa3', foreground='#197069'))
         button2.bind('<Leave>', lambda e: button2.config(background='#197069', foreground='#24baa3'))
-        button2.place(x=0, y=37)
+        button2.pack(fill="x")
 
-        button3 = Button(self, width=43, height=2, text="Algorithmes de machine learning", fg='#24baa3', bg='#197069',
-                         border=0, command=lambda:self.controller.show_ml_gui())
-        button3.bind('<Enter>', lambda e: button2.config(background='#24baa3', foreground='#197069'))
-        button3.bind('<Leave>', lambda e: button2.config(background='#197069', foreground='#24baa3'))
-        button3.place(x=0, y=74)
-        #self.create_button(0, 0, "Créer les données", '#24baa3', '#197069', 'createdata.py')
-        #self.create_button(0, 37, "Importer un fichier des données", '#24baa3', '#197069', 'ImporterData.py')
-        # self.create_button(0, 74, "Représnter les données", '#24baa3', '#197069', 'RepData.py')
-        # self.create_button(0, 111, "Gestion des données", '#24baa3', '#197069', 'manageData.py')
-        #self.create_button(0, 148, "Algorithmes de machine learning", '#24baa3', '#197069', 'MLGUI.py')
+        button3 = Button(self, text="Algorithmes de machine learning", fg='#24baa3', bg='#197069',
+                         command=lambda: self.controller.show_ml_gui())
+        button3.bind('<Enter>', lambda e: button3.config(background='#24baa3', foreground='#197069'))
+        button3.bind('<Leave>', lambda e: button3.config(background='#197069', foreground='#24baa3'))
+        button3.pack(fill="x")
+
+        button4 = Button(self, text="Représentation des Données", fg='#24baa3', bg='#197069',
+                         command=lambda: subprocess.run(["python", 'RepData.py']))
+        button4.bind('<Enter>', lambda e: button4.config(background='#24baa3', foreground='#197069'))
+        button4.bind('<Leave>', lambda e: button4.config(background='#197069', foreground='#24baa3'))
+        button4.pack(fill="x")
+
     def hide(self):
         self.pack_forget()
-
-
 
     def create_button(self, x, y, text, bcolor, fcolor, path):
         def on_enter(e):
@@ -56,5 +57,8 @@ class First_Page(tk.Frame):
         my_button.bind('<Enter>', on_enter)
         my_button.bind('<Leave>', on_leave)
         my_button.place(x=x, y=y)
-
-
+if __name__ == "__main__":
+    root = Tk()
+    app = First_Page(root, None)
+    app.pack(fill="both", expand=True)
+    root.mainloop()
