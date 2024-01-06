@@ -8,10 +8,10 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class DataPlotter:
-    def __init__(self, root):
+    def __init__(self, root,controller):
         self.root = root
         self.root.title("CSV Data Plotter")
-
+        self.controller = controller
         self.create_widgets()
         self.update_combobox_values()
 

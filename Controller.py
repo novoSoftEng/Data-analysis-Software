@@ -1,5 +1,6 @@
 import tkinter as tk
 from createdata import CSVEditorApp
+from RepData import DataPlotter
 from First_Page import First_Page
 from MLGUI import MLGUI
 class Controller:
@@ -7,6 +8,7 @@ class Controller:
         self.CSVEditorApp = None
         self.ml_gui = None
         self.first_page = None
+        self.DataPlotterApp = None
         self.root = root
         self.root.title("Main")
         self.root.geometry("400x300")
@@ -25,5 +27,9 @@ class Controller:
         if self.first_page:
             self.first_page.hide()
         self.CSVEditorApp = CSVEditorApp(self.root, self)
-        self.CSVEditorApp.pack(fill=tk.BOTH,expand=True)
+        self.first_page.hide()
+    def Rep_data(self):
+        if self.first_page:
+            self.first_page.hide()
+        self.DataPlotter = DataPlotter(self.root, self)
         self.first_page.hide()

@@ -10,7 +10,7 @@ class Main(tk.Tk):
         super().__init__()
         self.title("Main")
         self.geometry("400x300")
-        self.configure(bg="red")
+        self.configure(bg="lightblue")
         self.controller = Controller(self)
 
     def destroy(self):
