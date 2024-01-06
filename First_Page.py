@@ -31,7 +31,7 @@ class First_Page(tk.Frame):
         button3.pack(fill="x")
 
         button4 = Button(self, text="Représentation des Données", fg='#24baa3', bg='#197069',
-                         command=lambda: subprocess.run(["python", 'RepData.py']))
+                         command=lambda: self.controller.Rep_data())
         button4.bind('<Enter>', lambda e: button4.config(background='#24baa3', foreground='#197069'))
         button4.bind('<Leave>', lambda e: button4.config(background='#197069', foreground='#24baa3'))
         button4.pack(fill="x")

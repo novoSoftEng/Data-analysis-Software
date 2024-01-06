@@ -3,7 +3,7 @@ from tkinter import simpledialog, messagebox
 import pandas as pd
 from tksheet import Sheet
 
-class CSVEditorApp(tk.Tk):
+class CSVEditorApp():
     def __init__(self, master,controller):
         self.master = master
 
