@@ -1,5 +1,7 @@
+import os
 import tkinter as tk
 
+from Controller import Controller
 from First_Page import First_Page
 
 
@@ -8,8 +10,19 @@ class Main(tk.Tk):
         super().__init__()
         self.title("Main")
         self.geometry("400x300")
-        self.firstPage=First_Page(self)
-        self.firstPage.pack(fill=tk.BOTH, expand=True)
+        self.configure(bg="red")
+        self.controller = Controller(self)
+
+    def destroy(self):
+        # Delete the file on closing the app
+        try:
+            # Obtenir le répertoire courant
+            current_directory = os.getcwd()
+            destination_path = os.path.join(current_directory, "data")
+            os.remove(destination_path)
+        except FileNotFoundError:
+            pass
+        super().destroy()
 
 
 

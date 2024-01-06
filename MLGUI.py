@@ -22,14 +22,12 @@ y = iris.target  # Target
 
 
 
-class MLGUI:
-    def __init__(self, root):
-        root.geometry("800x600")
-        self.root = root
-        self.root.title("ML Model Evaluator")
+class MLGUI(tk.Frame):
+    def __init__(self, root,controller):
+        super().__init__(root, bg="lightblue")
 
         # Create and place a frame for the dropdown
-        dropdown_frame = ttk.Frame(root, padding=(10, 10, 10, 10))
+        dropdown_frame = ttk.Frame(self, padding=(10, 10, 10, 10))
         dropdown_frame.grid(row=0, column=0, columnspan=2, sticky="ew")
 
         # Create and place a dropdown
@@ -43,7 +41,7 @@ class MLGUI:
         self.dropdown.set(models[0])
 
         # Create and place a frame for radio buttons
-        radio_frame = ttk.Frame(root, padding=(10, 10, 10, 10))
+        radio_frame = ttk.Frame(self, padding=(10, 10, 10, 10))
         radio_frame.grid(row=1, column=0, columnspan=4, sticky="w")
 
         # Create a StringVar to store the selected value
@@ -62,11 +60,11 @@ class MLGUI:
         self.radio_button3.pack(side="left", padx=(0, 10))
 
         # Create and place a button
-        self.evaluate_button = tk.Button(root, text="Evaluate", command=self.evaluate)
+        self.evaluate_button = tk.Button(self, text="Evaluate", command=self.evaluate)
         self.evaluate_button.grid(row=2, column=0, columnspan=4, pady=10)
 
     def create_confusion_matrix(self,cm):
-        self.cm_display = ConfusionMatrixDisplay(root, cm, row=0, column=4)
+        self.cm_display = ConfusionMatrixDisplay(self, cm, row=0, column=4)
 
 
     def evaluate(self):
@@ -100,11 +98,4 @@ class MLGUI:
         accuracy, confusion_matrix = ml.evaluate()
         self.create_confusion_matrix(confusion_matrix)
 
-root = tk.Tk()
-
-
-app = MLGUI(root)
-
-    # Start the Tkinter event loop
-root.mainloop()
 
