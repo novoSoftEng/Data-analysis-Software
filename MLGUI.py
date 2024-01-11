@@ -50,7 +50,10 @@ class MLGUI(tk.Frame):
         self.dropdown_file.pack(side="left", padx=(0, 10))
 
         # Set default value for dropdown
-        self.dropdown_file.set(self.csv_files[0])
+        if self.csv_files!=[]:
+            self.dropdown_file.set(self.csv_files[0])
+
+
     def create_dropdown_target(self):
         # Create and place a frame for the dropdown
         dropdown_frame = ttk.Frame(self, padding=(10, 10, 10, 10))
@@ -59,13 +62,21 @@ class MLGUI(tk.Frame):
         # Create and place a dropdown for file choice
         self.dropdown_target_var = tk.StringVar()
         # making data frame
-        data = pd.read_csv(self.dropdown_file_var.get())
-        columns=[col for col in data.columns]
+        try:
+            data = pd.read_csv(self.dropdown_file_var.get())
+            columns = [col for col in data.columns]
+        except:
+            data=None
+            columns=None
+
+
+
         self.dropdown_target = ttk.Combobox(dropdown_frame, textvariable=self.dropdown_target_var, values=columns)
         self.dropdown_target.pack(side="left", padx=(0, 10))
 
         # Set default value for dropdown
-        self.dropdown_target.set(columns[-1])
+        if columns!=None:
+            self.dropdown_target.set(columns[-1])
 
     def create_dropdown_model(self):
         # Create and place a frame for the dropdown
