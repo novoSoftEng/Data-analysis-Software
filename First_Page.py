@@ -28,6 +28,12 @@ class First_Page(tk.Frame):
         button3.bind('<Enter>', lambda e: button2.config(background='#24baa3', foreground='#197069'))
         button3.bind('<Leave>', lambda e: button2.config(background='#197069', foreground='#24baa3'))
         button3.place(x=0, y=74)
+
+        button4 = Button(self, width=43, height=2, text="Gestion des données", fg='#24baa3', bg='#197069',
+                         border=0, command=lambda: self.controller.show_data_manager_gui())
+        button4.bind('<Enter>', lambda e: button2.config(background='#24baa3', foreground='#197069'))
+        button4.bind('<Leave>', lambda e: button2.config(background='#197069', foreground='#24baa3'))
+        button4.place(x=0, y=111)
         #self.create_button(0, 0, "Créer les données", '#24baa3', '#197069', 'createdata.py')
         #self.create_button(0, 37, "Importer un fichier des données", '#24baa3', '#197069', 'ImporterData.py')
         # self.create_button(0, 74, "Représnter les données", '#24baa3', '#197069', 'RepData.py')

@@ -15,7 +15,7 @@ def upload_file():
             file_name = os.path.basename(file_path)
 
             # Chemin de destination dans le répertoire courant
-            destination_path = os.path.join(current_directory, "data")
+            destination_path = os.path.join(current_directory, file_name)
 
             # Copier le fichier vers le chemin de destination
             shutil.copyfile(file_path, destination_path)
