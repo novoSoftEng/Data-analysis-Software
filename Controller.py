@@ -1,38 +1,49 @@
 import tkinter as tk
-from First_Page import First_Page
+from tkinter import ttk
+from createdata import CSVEditorApp
+from RepData import DataPlotter
 from MLGUI import MLGUI
-from DataManagerGUI import DataManagerGUI  # Import your DataManagerGUI class
+from First_Page import First_Page
 
 class Controller:
     def __init__(self, root):
-        self.ml_gui = None
-        self.first_page = None
-        self.data_manager_gui = None  # Add an instance of DataManagerGUI
         self.root = root
-        self.root.title("Main")
-        self.root.resizable(width=True, height=True)
-        self.root.geometry("800x600")
-        self.root.configure(bg="red")
+        self.notebook = ttk.Notebook(root)
+        self.notebook.pack(fill='both', expand=True)
+
+        self.first_page = First_Page(self.notebook, self)
+        self.createdata_page = CSVEditorApp(self.notebook, self)
+        self.ml_gui_page = MLGUI(self.notebook, self)
+        self.data_visualization_page = DataPlotter(self.notebook, self)
+
+        self.notebook.add(self.first_page, text='First Page')
+        self.notebook.add(self.createdata_page, text='Create Data')
+        self.notebook.add(self.ml_gui_page, text='ML GUI')
+        self.notebook.add(self.data_visualization_page, text='Data Visualization')
+
         self.show_first_page()
 
     def show_first_page(self):
-        self.first_page = First_Page(self.root, self)
-        self.first_page.pack(fill=tk.BOTH, expand=True)
+        self.notebook.select(0)  # Index of the First Page tab
+
+    def show_create_data(self):
+        self.notebook.select(1)  # Index of the Create Data tab
+
+    def show_import_data(self):
+        # Replace this with the correct index of the tab you want to show
+        # For example, if Create Data is at index 1, replace it with 1
+        self.notebook.select(1)
 
     def show_ml_gui(self):
-        self.ml_gui = MLGUI(self.root, self)
-        self.ml_gui.pack(fill=tk.BOTH, expand=True)
-        self.first_page.hide()
+        self.notebook.select(2)  # Index of the ML GUI tab
 
-    def show_data_manager_gui(self):
-        if self.data_manager_gui is None:
-            self.data_manager_gui = DataManagerGUI(self.root, self)
-        self.data_manager_gui.pack(fill=tk.BOTH, expand=True)
-        self.first_page.hide()
+    def show_data_visualization(self):
+        self.notebook.select(3)  # Index of the Data Visualization tab
 
-    def hide_data_manager_gui(self):
-        if self.data_manager_gui:
-            self.data_manager_gui.pack_forget()
-        self.show_first_page()
+def main():
+    root = tk.Tk()
+    controller = Controller(root)
+    root.mainloop()
 
-
+if __name__ == "__main__":
+    main()
