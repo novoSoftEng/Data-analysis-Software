@@ -10,6 +10,19 @@ class First_Page(tk.Frame):
         super().__init__(root, bg="lightblue")
         self.root = root
         self.controller = controller
+        menu_bar = tk.Menu(root)
+        #root.config(menu=menu_bar)
+
+        file_menu = tk.Menu(menu_bar, tearoff=0)
+        menu_bar.add_cascade(label="File", menu=file_menu)
+        file_menu.add_command(label="Data Creation Page", command=lambda: self.controller.show_create_data())
+        file_menu.add_command(label="Data Import Page", command=lambda: subprocess.run(["python", 'ImporterData.py']))
+        file_menu.add_command(label="Exit", command=root.destroy)
+
+        data_menu = tk.Menu(menu_bar, tearoff=0)
+        menu_bar.add_cascade(label="Data", menu=data_menu)
+        data_menu.add_command(label="Data Visualization Page", command=lambda: self.controller.Rep_data())
+        data_menu.add_command(label="Machine Learning Page", command=lambda: self.controller.show_ml_gui())
 
         # Create buttons using pack layout
         button1 = Button(self, text="Créer les données", fg='#24baa3', bg='#197069',
@@ -60,5 +73,4 @@ class First_Page(tk.Frame):
 if __name__ == "__main__":
     root = Tk()
     app = First_Page(root, None)
-    app.pack(fill="both", expand=True)
     root.mainloop()

@@ -3,29 +3,45 @@ from tkinter import simpledialog, messagebox
 import pandas as pd
 from tksheet import Sheet
 
-class CSVEditorApp():
-    def __init__(self, master,controller):
-        self.master = master
 
-        master.geometry('800x600')
-        master.title('Modification de Table')
+class CSVEditorApp(tk.Frame):
+    def __init__(self, master, controller):
+        super().__init__(master, bg="lightblue")
         self.controller = controller
+
         self.file_name_var = tk.StringVar()
         self.columns = []
 
-        tk.Label(master, text="Nom du fichier CSV (sans extension):").pack()
-        tk.Entry(master, textvariable=self.file_name_var).pack()
+        self.create_widgets()
 
-        tk.Label(master, text="Nombre de colonnes:").pack()
+    def create_widgets(self):
+        tk.Label(self, text="Nom du fichier CSV (sans extension):").pack()
+        tk.Entry(self, textvariable=self.file_name_var).pack()
+
+        tk.Label(self, text="Nombre de colonnes:").pack()
         self.num_columns_var = tk.StringVar()
-        self.num_columns_entry = tk.Entry(master, textvariable=self.num_columns_var)
+        self.num_columns_entry = tk.Entry(self, textvariable=self.num_columns_var)
         self.num_columns_entry.pack()
 
-        self.define_columns_button = tk.Button(master, text="Définir les colonnes", command=self.define_columns)
+        self.define_columns_button = tk.Button(self, text="Définir les colonnes", command=self.define_columns)
         self.define_columns_button.pack()
 
         # tksheet
-        self.sheet = Sheet(master, page_up_down_select_row=True, edit_cell_validation=True)
+        self.sheet = Sheet(self, page_up_down_select_row=True, edit_cell_validation=True)
+        self.setup_sheet_bindings()
+        self.sheet.pack(fill="both", expand=True)
+
+        self.add_row_button = tk.Button(self, text="Ajouter une ligne", command=self.add_row)
+        self.add_row_button.pack()
+
+        self.csv_button = tk.Button(self, text="Créer le fichier CSV", command=self.create_csv)
+        self.csv_button.pack()
+
+        self.sheet.extra_bindings([("<<TableEdited>>", self.on_cell_edit)])
+        self.back_button = tk.Button(self, text="Retour à la première page", command=self.controller.show_first_page)
+        self.back_button.pack()
+
+    def setup_sheet_bindings(self):
         self.sheet.enable_bindings("all")
         self.sheet.enable_bindings(("single_select", "row_select", "column_width_resize", "arrowkeys",
                                     "right_click_popup_menu",
@@ -40,16 +56,7 @@ class CSVEditorApp():
                                     "edit_cell",
                                     "end_edit_cell"))
         self.sheet.extra_bindings("end_edit_cell")
-        self.sheet.pack(fill="both", expand=True)
         self.sheet.set_options(edit_cell_validation=True)
-
-        self.add_row_button = tk.Button(master, text="Ajouter une ligne", command=self.add_row)
-        self.add_row_button.pack()
-
-        self.csv_button = tk.Button(master, text="Créer le fichier CSV", command=self.create_csv)
-        self.csv_button.pack()
-
-        self.sheet.extra_bindings([("<<TableEdited>>", self.on_cell_edit)])
 
     def create_csv(self):
         file_name = self.file_name_var.get()
@@ -106,7 +113,9 @@ class CSVEditorApp():
         row, col, value = event[0], event[1], event[2]
         print(f"Cellule éditée : Ligne {row}, Colonne {col}, Nouvelle valeur : {value}")
 
+
 if __name__ == "__main__":
     window = tk.Tk()
-    app = CSVEditorApp(window)
+    app = CSVEditorApp(window, None)
+    app.pack(fill="both", expand=True)
     window.mainloop()
