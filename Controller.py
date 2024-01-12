@@ -40,10 +40,4 @@ class Controller:
     def show_data_visualization(self):
         self.notebook.select(3)  # Index of the Data Visualization tab
 
-def main():
-    root = tk.Tk()
-    controller = Controller(root)
-    root.mainloop()
 
-if __name__ == "__main__":
-    main()

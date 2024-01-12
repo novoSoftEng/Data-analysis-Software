@@ -3,44 +3,43 @@ from tkinter import filedialog
 import shutil
 import os
 
+class ImporterData:
+    def __init__(self,controller):
+        self.window = tk.Tk()
+        self.window.title("Exemple de téléchargement et d'enregistrement de fichier")
+        self.controller=controller
+        # Create and configure the frame
+        self.frame = tk.Frame(self.window, padx=20, pady=20)
+        self.frame.pack(padx=10, pady=10)
 
-def upload_file():
-    file_path = filedialog.askopenfilename(title="Sélectionner un fichier", filetypes=[("Tous les fichiers", "*.*")])
-    if file_path:
-        try:
-            # Obtenir le répertoire courant
-            current_directory = os.getcwd()
+        # Create the widgets
+        self.upload_button = tk.Button(self.frame, text="Télécharger le fichier", command=self.upload_file)
+        self.status_label = tk.Label(self.frame, text="Aucun fichier sélectionné", wraplength=300)
 
-            # Extraire le nom du fichier
-            file_name = os.path.basename(file_path)
+        # Place the widgets in the frame
+        self.upload_button.pack(pady=10)
+        self.status_label.pack()
 
-            # Chemin de destination dans le répertoire courant
-            destination_path = os.path.join(current_directory, file_name)
+    def upload_file(self):
+        file_path = filedialog.askopenfilename(title="Sélectionner un fichier", filetypes=[("Tous les fichiers", "*.*")])
+        if file_path:
+            try:
+                current_directory = os.getcwd()
+                file_name = os.path.basename(file_path)
+                destination_path = os.path.join(current_directory, file_name)
+                shutil.copyfile(file_path, destination_path)
 
-            # Copier le fichier vers le chemin de destination
-            shutil.copyfile(file_path, destination_path)
+                self.status_label.config(text=f"Fichier '{file_name}' enregistré dans le répertoire courant")
+                self.controller.ml_gui_page.refresh()
+            except Exception as e:
+                self.status_label.config(text=f"Erreur lors de l'enregistrement du fichier : {str(e)}")
+        else:
+            self.status_label.config(text="Aucun fichier sélectionné")
 
-            status_label.config(text=f"Fichier '{file_name}' enregistré dans le répertoire courant")
-        except Exception as e:
-            status_label.config(text=f"Erreur lors de l'enregistrement du fichier : {str(e)}")
-    else:
-        status_label.config(text="Aucun fichier sélectionné")
+    def run(self):
+        # Run the Tkinter main loop
+        self.window.mainloop()
 
 
-# Créer la fenêtre principale
-window = tk.Tk()
-window.title("Exemple de téléchargement et d'enregistrement de fichier")
 
-# Créer et configurer le cadre
-frame = tk.Frame(window, padx=20, pady=20)
-frame.pack(padx=10, pady=10)
 
-# Créer les widgets
-upload_button = tk.Button(frame, text="Télécharger le fichier", command=upload_file)
-status_label = tk.Label(frame, text="Aucun fichier sélectionné", wraplength=300)
-
-# Placer les widgets dans le cadre
-upload_button.pack(pady=10)
-status_label.pack()
-
-window.mainloop()

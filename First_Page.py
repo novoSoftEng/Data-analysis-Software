@@ -2,6 +2,7 @@ import subprocess
 from tkinter import Tk, Button
 import tkinter as tk
 
+from ImporterData import ImporterData
 from MLGUI import MLGUI
 
 
@@ -16,7 +17,7 @@ class First_Page(tk.Frame):
         file_menu = tk.Menu(menu_bar, tearoff=0)
         menu_bar.add_cascade(label="File", menu=file_menu)
         file_menu.add_command(label="Data Creation Page", command=lambda: self.controller.show_create_data())
-        file_menu.add_command(label="Data Import Page", command=lambda: subprocess.run(["python", 'ImporterData.py']))
+        file_menu.add_command(label="Data Import Page", command=lambda: ImporterData(self.controller).run())
         file_menu.add_command(label="Exit", command=root.destroy)
 
         data_menu = tk.Menu(menu_bar, tearoff=0)
@@ -32,7 +33,7 @@ class First_Page(tk.Frame):
         button1.pack(fill="x")
 
         button2 = Button(self, text="Importer un fichier des données", fg='#24baa3', bg='#197069',
-                         command=lambda: subprocess.run(["python", 'ImporterData.py']))
+                         command=lambda: ImporterData(self.controller).run())
         button2.bind('<Enter>', lambda e: button2.config(background='#24baa3', foreground='#197069'))
         button2.bind('<Leave>', lambda e: button2.config(background='#197069', foreground='#24baa3'))
         button2.pack(fill="x")
