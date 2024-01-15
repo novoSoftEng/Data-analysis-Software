@@ -50,4 +50,4 @@ class Controller:
         self.notebook.select(4)
     def update_dependents(self):
         self.ml_gui_page.refresh()
-        print("in update_dependents")
+        self.data_management_page.refresh()

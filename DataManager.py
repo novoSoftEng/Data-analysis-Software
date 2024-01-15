@@ -40,13 +40,19 @@ class DataManager:
 
         """
         if columns is None:
+            # Assuming self.data is your DataFrame
+            columns_to_convert = self.data.select_dtypes(include='object').columns
+
+            # Convert object columns to numeric (if they contain numbers)
+            self.data[columns_to_convert] = self.data[columns_to_convert].apply(pd.to_numeric, errors='ignore')
+            print("data types",self.data.dtypes)
             # Select all object or category columns if 'columns' is not specified
-            categorical_columns = self.data.select_dtypes(include=['object']).columns
+            categorical_columns = self.data.select_dtypes(include=['object'],exclude=['float64','int64']).columns
         else:
             categorical_columns = columns
 
         # Use pandas get_dummies to create dummy variables with binary values (0/1)
-        print(categorical_columns)
+        print("categorical_columns",categorical_columns)
         dummy_variables = pd.get_dummies(
             self.data[categorical_columns],
             columns=categorical_columns,
