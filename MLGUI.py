@@ -35,6 +35,10 @@ class MLGUI(tk.Frame):
         self.create_radio_buttons_prepr()
 
     def create_dropdown_files(self):
+        def on_dropdown_change(event):
+
+            self.create_dropdown_target()
+
         # Create and place a frame for the dropdown
         dropdown_frame = ttk.Frame(self, padding=(10, 10, 10, 10))
         dropdown_frame.grid(row=0, column=0, columnspan=2, sticky="ew")
@@ -48,6 +52,9 @@ class MLGUI(tk.Frame):
         # Set default value for dropdown
         if self.dataManager.csv_files != []:
             self.dropdown_file.set(self.dataManager.csv_files[0])
+
+        # Bind the callback function to the <<ComboboxSelected>> event
+        self.dropdown_file.bind("<<ComboboxSelected>>", on_dropdown_change)
 
     def create_dropdown_target(self):
         # Create and place a frame for the dropdown
