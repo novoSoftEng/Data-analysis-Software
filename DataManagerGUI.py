@@ -158,7 +158,7 @@ class DataManagerGUI(tk.Frame):
         handle_missing_values_btn.grid(row=1, column=5)
         def to_numeric():
             self.dataManager.create_dummy_variables()
-            self.create_data_management_buttons()
+
             self.refresh_table()
 
         # Button to change categorical to numeric
@@ -200,6 +200,12 @@ class DataManagerGUI(tk.Frame):
             self.refresh_table()
 
     def refresh(self):
+        for child in self.table_frame.winfo_children():
+            child.destroy()
+        for child in self.manage_frame.winfo_children():
+            child.destroy()
+        for child in self.dropdown_frame.winfo_children():
+            child.destroy()
         self.create_dropdown_files()
 
 
