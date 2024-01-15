@@ -30,7 +30,7 @@ class ImporterData:
                 shutil.copyfile(file_path, destination_path)
 
                 self.status_label.config(text=f"Fichier '{file_name}' enregistré dans le répertoire courant")
-                self.controller.ml_gui_page.refresh()
+                self.controller.update_dependents()
             except Exception as e:
                 self.status_label.config(text=f"Erreur lors de l'enregistrement du fichier : {str(e)}")
         else:

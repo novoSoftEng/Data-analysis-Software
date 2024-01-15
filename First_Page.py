@@ -50,6 +50,11 @@ class First_Page(tk.Frame):
         button4.bind('<Leave>', lambda e: button4.config(background='#197069', foreground='#24baa3'))
         button4.pack(fill="x")
 
+        button5 = Button(self, text="Gestion des données", fg='#24baa3', bg='#197069',
+                         command=lambda: self.controller.show_)
+        button4.bind('<Enter>', lambda e: button4.config(background='#24baa3', foreground='#197069'))
+        button4.bind('<Leave>', lambda e: button4.config(background='#197069', foreground='#24baa3'))
+        button4.pack(fill="x")
     def hide(self):
         self.pack_forget()
 

@@ -13,23 +13,15 @@ from DataManager import DataManager
 from ML import ML
 
 
-
-
-
-
-
-
-
-
 class MLGUI(tk.Frame):
-    def __init__(self, root, controller):
+    def __init__(self, root, controller,dataManager):
         super().__init__(root, bg="lightblue")
         self.dropdown_var = None
-        self.csv_files=[]
-        self.find_data_files()
+
         self.controller = controller
-        self.X=None
-        self.y=None
+        self.X = None
+        self.y = None
+        self.dataManager = dataManager
 
         self.create_dropdown_model()
         self.create_dropdown_files()
@@ -42,7 +34,6 @@ class MLGUI(tk.Frame):
         self.create_dropdown_target()
         self.create_radio_buttons_prepr()
 
-
     def create_dropdown_files(self):
         # Create and place a frame for the dropdown
         dropdown_frame = ttk.Frame(self, padding=(10, 10, 10, 10))
@@ -50,37 +41,36 @@ class MLGUI(tk.Frame):
 
         # Create and place a dropdown for file choice
         self.dropdown_file_var = tk.StringVar()
-        self.dropdown_file = ttk.Combobox(dropdown_frame, textvariable=self.dropdown_file_var, values=self.csv_files)
+        self.dropdown_file = ttk.Combobox(dropdown_frame, textvariable=self.dropdown_file_var,
+                                          values=self.dataManager.csv_files)
         self.dropdown_file.pack(side="left", padx=(0, 10))
 
         # Set default value for dropdown
-        if self.csv_files!=[]:
-            self.dropdown_file.set(self.csv_files[0])
-
+        if self.dataManager.csv_files != []:
+            self.dropdown_file.set(self.dataManager.csv_files[0])
 
     def create_dropdown_target(self):
         # Create and place a frame for the dropdown
         dropdown_frame = ttk.Frame(self, padding=(10, 10, 10, 10))
         dropdown_frame.grid(row=0, column=4, columnspan=2, sticky="ew")
 
-        # Create and place a dropdown for file choice
+        # Create and place a dropdown for target variable choice
         self.dropdown_target_var = tk.StringVar()
-        # making data frame
-        try:
-            data = pd.read_csv(self.dropdown_file_var.get())
-            columns = [col for col in data.columns]
-        except:
-            data=None
-            columns=None
 
+        # Load data from the selected CSV file
+        selected_file = self.dropdown_file_var.get()
+        self.dataManager.load_data(selected_file)
 
+        # Extract column names and filter for non-numeric columns
+        columns =tuple(self.dataManager.getColumns())
 
+        # Create and place a dropdown for file choice
         self.dropdown_target = ttk.Combobox(dropdown_frame, textvariable=self.dropdown_target_var, values=columns)
         self.dropdown_target.pack(side="left", padx=(0, 10))
 
         # Set default value for dropdown
-        if columns!=None:
-            self.dropdown_target.set(columns[-1])
+        if columns is not None:
+            self.dropdown_target.set(columns[0])
 
     def create_dropdown_model(self):
         # Create and place a frame for the dropdown
@@ -125,16 +115,15 @@ class MLGUI(tk.Frame):
         self.evaluate_button = tk.Button(self, text="Evaluate", command=self.evaluate)
         self.evaluate_button.grid(row=2, column=0, columnspan=4, pady=10)
 
-    def create_confusion_matrix(self,cm):
+    def create_confusion_matrix(self, cm):
         self.cm_display = ConfusionMatrixDisplay(self, cm, row=0, column=4)
-
 
     def evaluate(self):
         selected_model = self.dropdown_model_var.get()
         selected_file = self.dropdown_file_var.get()
-        data=pd.read_csv(selected_file)
-        selected_target= self.dropdown_target_var.get()
-        self.X = data.drop([selected_target],axis=1)
+        data = pd.read_csv(selected_file)
+        selected_target = self.dropdown_target_var.get()
+        self.X = data.drop([selected_target], axis=1)
         self.y = data[selected_target]
 
         # Map models to corresponding classes
@@ -152,18 +141,16 @@ class MLGUI(tk.Frame):
         # Do something with the data (for now, just print it)
         print("Selected Option:", selected_model)
         print("Model:", model)
-        norm=False
-        stand=False
+        norm = False
+        stand = False
         if self.selected_prep == "norm":
-            norm=True
+            norm = True
         elif self.selected_prep == "stand":
-            stand=True
-        ml = ML(model, self.X, self.y,stand=stand,norm=norm)
+            stand = True
+        ml = ML(model, self.X, self.y, stand=stand, norm=norm)
 
         # Evaluate the model
         accuracy, confusion_matrix = ml.evaluate()
         self.create_confusion_matrix(confusion_matrix)
 
-    def find_data_files(self):
-        current_folder = os.path.dirname(os.path.abspath(__file__))
-        self.csv_files = [file for file in os.listdir(current_folder) if file.endswith('.csv')]
+

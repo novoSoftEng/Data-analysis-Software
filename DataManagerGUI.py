@@ -11,7 +11,7 @@ from DataManager import DataManager
 
 
 class DataManagerGUI(tk.Frame):
-    def __init__(self, root, controller):
+    def __init__(self, root, controller,dataManager):
         super().__init__(root, bg="lightblue")
         self.deleted_columns= []
         # Create and place a frame for the dropdown
@@ -30,35 +30,29 @@ class DataManagerGUI(tk.Frame):
         self.table_frame = ttk.Frame(self)
         self.table_frame.grid(row=3, column=0,columnspan=3, sticky="nsew")
 
-        self.dataManager = DataManager()
+        self.dataManager = dataManager
         self.controller = controller
-        self.csv_files = []
         self.columns = None
-        self.data=None
         self.table=None
-
-        self.find_data_files()
         self.create_dropdown_files()
 
 
         # Add buttons for managing data
         #self.create_data_management_buttons()
 
-    def find_data_files(self):
-        current_folder = os.path.dirname(os.path.abspath(__file__))
-        self.csv_files = [file for file in os.listdir(current_folder) if file.endswith('.csv')]
+
 
     def create_dropdown_files(self):
 
 
         # Create and place a dropdown for file choice
         self.dropdown_file_var = tk.StringVar()
-        self.dropdown_file = ttk.Combobox(self.dropdown_frame, textvariable=self.dropdown_file_var, values=self.csv_files)
+        self.dropdown_file = ttk.Combobox(self.dropdown_frame, textvariable=self.dropdown_file_var, values=self.dataManager.csv_files)
         self.dropdown_file.pack(side="left", padx=(0, 10))
 
         # Set default value for dropdown
-        if self.csv_files:
-            self.dropdown_file.set(self.csv_files[0])
+        if self.dataManager.csv_files:
+            self.dropdown_file.set(self.dataManager.csv_files[0])
 
         # Add button to load selected CSV
         load_button = tk.Button(self.dropdown_frame, text="Load CSV", command=self.load_selected_csv)
@@ -69,7 +63,6 @@ class DataManagerGUI(tk.Frame):
         if selected_file:
             self.dataManager.load_data(selected_file)
             self.columns=self.dataManager.getColumns()
-            self.data=self.dataManager.getData()
             self.create_data_management_buttons()
             self.create_table()
 
@@ -89,9 +82,9 @@ class DataManagerGUI(tk.Frame):
         for col in self.headers:
             self.table.heading(col, text=col)
             self.table.column(col, width=100, anchor=tk.CENTER)  # Adjust the width as needed
-        self.data = self.dataManager.getData()
+
         # Insert data into the treeview
-        for row in self.data.to_numpy():
+        for row in self.dataManager.data.to_numpy():
             self.table.insert("", "end", values=tuple(row))
 
         # Add a vertical scrollbar to the treeview
@@ -159,23 +152,23 @@ class DataManagerGUI(tk.Frame):
             # Update the table or perform any necessary actions after handling missing values
             self.refresh_table()
 
+
         # Button to apply missing values handling
         handle_missing_values_btn = tk.Button(self.manage_frame, text="Apply", command=handle_missing_values)
         handle_missing_values_btn.grid(row=1, column=5)
+        def to_numeric():
+            self.dataManager.create_dummy_variables()
+            self.refresh_table()
 
-    def add_row(self):
-        values = self.table.model.getRecordAtRow(0)
-        self.controller.add_row(values)
-        self.refresh_table()
-
-    def define_columns(self):
-        num_columns = simpledialog.askinteger("Number of Columns", "Enter the number of columns:")
-        if num_columns is not None and num_columns > 0:
-            column_names = simpledialog.askstring("Column Names", "Enter column names separated by commas:")
-            if column_names:
-                self.columns = column_names.split(',')
-                self.controller.define_columns(self.columns)
-                self.refresh_table()
+        # Button to change categorical to numeric
+        change_categorical_btn = tk.Button(self.manage_frame, text="Change Categorical to Numeric",
+                                           command=to_numeric)
+        change_categorical_btn.grid(row=2, column=0)
+        def save():
+            self.dataManager.update_file(self.dataManager.data)
+            self.controller.update_dependents()
+        save_changes_btn= tk.Button(self.manage_frame, text="Save Changes", command=save)
+        save_changes_btn.grid(row=3, column=3)
 
     def refresh_table(self):
         # Destroy all children of the table_frame
@@ -201,7 +194,7 @@ class DataManagerGUI(tk.Frame):
 
             last_deleted= self.deleted_columns.pop()
             print(last_deleted)
-            self.data=self.dataManager.rollBackDelete(last_deleted)
+            self.dataManager.rollBackDelete(last_deleted)
             self.columns=self.dataManager.getColumns()
             self.refresh_table()
 

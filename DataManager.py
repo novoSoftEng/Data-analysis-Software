@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 import numpy as np
 from sklearn.impute import SimpleImputer
@@ -5,8 +7,24 @@ from sklearn.preprocessing import OneHotEncoder
 
 class DataManager:
     def __init__(self):
+        self.csv_files=None
         self.data = None
+        self.file_path=None
         self.prev_data={}
+        self.find_data_files()
+
+    def update_file(self,data):
+        if self.file_path:
+            try:
+                # Overwrite the existing file with the updated data
+                data.to_csv(self.file_path, index=False)
+                self.data = data
+                print(f"File '{self.file_path}' updated successfully.")
+            except Exception as e:
+                print(f"Error updating the file: {str(e)}")
+        else:
+            print("No file path specified. Use set_file_path method to set a file path.")
+
     def getColumns(self):
         return self.data.columns
     def getData(self):
@@ -23,20 +41,33 @@ class DataManager:
         """
         if columns is None:
             # Select all object or category columns if 'columns' is not specified
-            categorical_columns = self.data.select_dtypes(include=['object', 'category']).columns
+            categorical_columns = self.data.select_dtypes(include=['object']).columns
         else:
             categorical_columns = columns
 
-        # Use pandas get_dummies to create dummy variables
-        self.data = pd.get_dummies(self.data, columns=categorical_columns)
+        # Use pandas get_dummies to create dummy variables with binary values (0/1)
+        print(categorical_columns)
+        dummy_variables = pd.get_dummies(
+            self.data[categorical_columns],
+            columns=categorical_columns,
+            prefix=None,  # Use column names as prefixes
+            prefix_sep='_',
+            dummy_na=False,
+        )
 
-        # Alternatively, you can use OneHotEncoder from scikit-learn
-        # encoder = OneHotEncoder(drop='first', sparse=False)
-        # dummy_variables = encoder.fit_transform(self.data[categorical_columns])
-        # self.data = pd.concat([self.data, pd.DataFrame(dummy_variables, columns=encoder.get_feature_names_out(categorical_columns))], axis=1)
+        # Concatenate dummy variables with the original DataFrame
+        self.data = pd.concat([self.data, dummy_variables], axis=1)
+
+        # Drop the original categorical columns
+        self.data.drop(columns=categorical_columns, inplace=True)
     def load_data(self, file_path):
         # Load data from CSV file into a Pandas DataFrame
+        self.file_path=file_path
         self.data = pd.read_csv(file_path)
+    def find_data_files(self):
+        current_folder = os.path.dirname(os.path.abspath(__file__))
+        self.csv_files = [file for file in os.listdir(current_folder) if file.endswith('.csv')]
+        return self.csv_files
 
     def handle_missing_values(self, strategy='mean', fill_value=None):
         """
@@ -51,7 +82,6 @@ class DataManager:
         """
         if strategy == 'constant' and fill_value is None:
             raise ValueError("If strategy is 'constant', a fill_value must be provided.")
-
         imputer = SimpleImputer(strategy=strategy, fill_value=fill_value)
         self.data = pd.DataFrame(imputer.fit_transform(self.data), columns=self.data.columns)
         return self.data
@@ -71,22 +101,8 @@ class DataManager:
             print(f"No previous data found for column {col}")
             return None
 
-    def one_hot_encode(self, columns_to_encode):
-        # Perform one-hot encoding on specified categorical columns
-        encoder = OneHotEncoder(drop='first', sparse=False)
-        encoded_data = pd.DataFrame(encoder.fit_transform(self.data[columns_to_encode]))
-        encoded_data.columns = encoder.get_feature_names_out(columns=columns_to_encode)
 
-        # Concatenate the encoded data with the original DataFrame
-        self.data = pd.concat([self.data, encoded_data], axis=1)
 
-        # Drop the original categorical columns
-        self.data.drop(columns=columns_to_encode, inplace=True)
 
-    def get_features_labels(self, target_column):
-        # Extract features (X) and labels (y) from the DataFrame
-        features = self.data.drop(columns=[target_column])
-        labels = self.data[target_column]
-        return features, labels
 
 
