@@ -120,10 +120,10 @@ class MLGUI(tk.Frame):
 
         # Create and place a button
         self.evaluate_button = tk.Button(self, text="Evaluate", command=self.evaluate)
-        self.evaluate_button.grid(row=2, column=0, columnspan=4, pady=10)
+        self.evaluate_button.grid(row=2, column=0, columnspan=2, pady=10)
 
     def create_confusion_matrix(self, cm):
-        self.cm_display = ConfusionMatrixDisplay(self, cm, row=0, column=4)
+        self.cm_display = ConfusionMatrixDisplay(self, cm, row=0, column=3)
 
     def evaluate(self):
         selected_model = self.dropdown_model_var.get()
