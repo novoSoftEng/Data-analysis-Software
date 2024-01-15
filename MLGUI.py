@@ -71,7 +71,10 @@ class MLGUI(tk.Frame):
         self.dataManager.load_data(selected_file)
 
         # Extract column names and filter for non-numeric columns
-        columns = tuple(self.dataManager.getColumns())
+        if self.dataManager.getColumns() is not None:
+            columns = tuple(self.dataManager.getColumns())
+        else:
+            columns=None
 
         # Create and place a dropdown for file choice
         self.dropdown_target = ttk.Combobox(dropdown_frame, textvariable=self.dropdown_target_var, values=columns)

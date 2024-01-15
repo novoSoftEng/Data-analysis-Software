@@ -26,7 +26,10 @@ class DataManager:
             print("No file path specified. Use set_file_path method to set a file path.")
 
     def getColumns(self):
-        return self.data.columns
+        if self.data is not None:
+            return self.data.columns
+        return None
+
     def getData(self):
         return self.data
 
@@ -69,7 +72,10 @@ class DataManager:
     def load_data(self, file_path):
         # Load data from CSV file into a Pandas DataFrame
         self.file_path=file_path
-        self.data = pd.read_csv(file_path)
+        try:
+            self.data = pd.read_csv(file_path)
+        except:
+            self.data=None
     def find_data_files(self):
         current_folder = os.path.dirname(os.path.abspath(__file__))
         self.csv_files = [file for file in os.listdir(current_folder) if file.endswith('.csv')]
