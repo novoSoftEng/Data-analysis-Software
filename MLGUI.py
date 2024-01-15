@@ -14,7 +14,7 @@ from ML import ML
 
 
 class MLGUI(tk.Frame):
-    def __init__(self, root, controller,dataManager):
+    def __init__(self, root, controller, dataManager):
         super().__init__(root, bg="lightblue")
         self.dropdown_var = None
 
@@ -22,7 +22,10 @@ class MLGUI(tk.Frame):
         self.X = None
         self.y = None
         self.dataManager = dataManager
-
+        self.left_frame = tk.Frame(self)
+        self.left_frame.grid(row=0, column=0, columnspan=2)
+        self.right_frame = tk.Frame(self)
+        self.right_frame.grid(row=0, column=2, columnspan=2)
         self.create_dropdown_model()
         self.create_dropdown_files()
         self.create_dropdown_target()
@@ -36,11 +39,10 @@ class MLGUI(tk.Frame):
 
     def create_dropdown_files(self):
         def on_dropdown_change(event):
-
             self.create_dropdown_target()
 
         # Create and place a frame for the dropdown
-        dropdown_frame = ttk.Frame(self, padding=(10, 10, 10, 10))
+        dropdown_frame = ttk.Frame(self.left_frame, padding=(10, 10, 10, 10))
         dropdown_frame.grid(row=0, column=0, columnspan=2, sticky="ew")
 
         # Create and place a dropdown for file choice
@@ -58,7 +60,7 @@ class MLGUI(tk.Frame):
 
     def create_dropdown_target(self):
         # Create and place a frame for the dropdown
-        dropdown_frame = ttk.Frame(self, padding=(10, 10, 10, 10))
+        dropdown_frame = ttk.Frame(self.left_frame, padding=(10, 10, 10, 10))
         dropdown_frame.grid(row=0, column=4, columnspan=2, sticky="ew")
 
         # Create and place a dropdown for target variable choice
@@ -69,7 +71,7 @@ class MLGUI(tk.Frame):
         self.dataManager.load_data(selected_file)
 
         # Extract column names and filter for non-numeric columns
-        columns =tuple(self.dataManager.getColumns())
+        columns = tuple(self.dataManager.getColumns())
 
         # Create and place a dropdown for file choice
         self.dropdown_target = ttk.Combobox(dropdown_frame, textvariable=self.dropdown_target_var, values=columns)
@@ -81,7 +83,7 @@ class MLGUI(tk.Frame):
 
     def create_dropdown_model(self):
         # Create and place a frame for the dropdown
-        dropdown_frame = ttk.Frame(self, padding=(10, 10, 10, 10))
+        dropdown_frame = ttk.Frame(self.left_frame, padding=(10, 10, 10, 10))
         dropdown_frame.grid(row=0, column=2, columnspan=2, sticky="ew")
 
         # Create and place a dropdown for model choice
@@ -96,8 +98,8 @@ class MLGUI(tk.Frame):
 
     def create_radio_buttons_prepr(self):
         # Create and place a frame for radio buttons
-        radio_frame = ttk.Frame(self, padding=(10, 10, 10, 10))
-        radio_frame.grid(row=1, column=0, columnspan=4, sticky="w")
+        radio_frame = ttk.Frame(self.left_frame, padding=(10, 10, 10, 10))
+        radio_frame.grid(row=1, column=0, columnspan=3, sticky="w")
 
         # Create a StringVar to store the selected value
         self.selected_prep = tk.StringVar()
@@ -123,7 +125,7 @@ class MLGUI(tk.Frame):
         self.evaluate_button.grid(row=2, column=0, columnspan=2, pady=10)
 
     def create_confusion_matrix(self, cm):
-        self.cm_display = ConfusionMatrixDisplay(self, cm, row=0, column=3)
+        self.cm_display = ConfusionMatrixDisplay(self.right_frame, cm)
 
     def evaluate(self):
         selected_model = self.dropdown_model_var.get()
@@ -159,5 +161,3 @@ class MLGUI(tk.Frame):
         # Evaluate the model
         accuracy, confusion_matrix = ml.evaluate()
         self.create_confusion_matrix(confusion_matrix)
-
-

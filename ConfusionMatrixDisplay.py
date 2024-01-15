@@ -3,7 +3,7 @@ from tkinter import ttk
 import numpy as np
 
 class ConfusionMatrixDisplay:
-    def __init__(self, root, cm, row, column):
+    def __init__(self, root, cm, row=0, column=1):
         self.root = root
         self.cm = cm
 
