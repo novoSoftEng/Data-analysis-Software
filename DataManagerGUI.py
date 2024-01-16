@@ -28,7 +28,7 @@ class DataManagerGUI(tk.Frame):
 
         # Create Table Frame
         self.table_frame = ttk.Frame(self)
-        self.table_frame.grid(row=3, column=0,columnspan=3, sticky="nsew")
+        self.table_frame.grid(row=3, column=0,columnspan=3,rowspan=2, sticky="nsew")
 
         self.dataManager = dataManager
         self.controller = controller
@@ -206,6 +206,7 @@ class DataManagerGUI(tk.Frame):
             child.destroy()
         for child in self.dropdown_frame.winfo_children():
             child.destroy()
+            self.dataManager.find_data_files()
         self.create_dropdown_files()
 
 

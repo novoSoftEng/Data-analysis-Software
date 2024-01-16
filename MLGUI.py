@@ -32,6 +32,7 @@ class MLGUI(tk.Frame):
         self.create_radio_buttons_prepr()
 
     def refresh(self):
+        self.dataManager.find_data_files()
         self.create_dropdown_model()
         self.create_dropdown_files()
         self.create_dropdown_target()

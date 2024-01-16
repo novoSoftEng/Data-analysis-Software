@@ -49,5 +49,6 @@ class Controller:
     def show_manage_data(self):
         self.notebook.select(4)
     def update_dependents(self):
+        print("update dependants")
         self.ml_gui_page.refresh()
         self.data_management_page.refresh()
